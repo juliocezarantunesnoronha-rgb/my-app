@@ -1,0 +1,1 @@
+export type Jogador = "jogador1" | "jogador2";

@@ -1,0 +1,232 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    color: #fff;
+    font-family: "Arial", sans-serif;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-size: 1.5rem;
+    background: #1a1a1a;
+}
+
+/* HEADER COM VIDAS */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 2px solid #8b0000;
+}
+
+.vidaInimiga,
+.minhaVida {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.label {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+.vida {
+    font-size: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.info {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 1rem;
+}
+
+.posicionamento {
+    color: #4a90e2;
+}
+
+.combate {
+    color: #e94b3c;
+    font-weight: bold;
+}
+
+/* TABULEIRO */
+.tabuleiroInimigo,
+.tabuleiroSeu {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #444;
+}
+
+.tabuleiroInimigo h3,
+.tabuleiroSeu h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    text-transform: uppercase;
+    color: #bbb;
+}
+
+.slots {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.slot {
+    aspect-ratio: 3/4;
+    border: 2px solid #666;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.slot:hover:not(.indisponivel) {
+    border-color: #8b0000;
+    background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+    transform: scale(1.05);
+}
+
+.slot.indisponivel {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.slot.comCarta {
+    border-color: #daa520;
+}
+
+.vazio {
+    font-size: 2rem;
+    color: #666;
+}
+
+.carta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #3a3a3a 0%, #1a1a1a 100%);
+    padding: 0.5rem;
+    text-align: center;
+    gap: 0.3rem;
+}
+
+.nome {
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: #daa520;
+}
+
+.stats {
+    font-size: 0.75rem;
+    color: #aaa;
+}
+
+.raca {
+    font-size: 0.7rem;
+    color: #888;
+    font-style: italic;
+}
+
+/* MÃO */
+.mao {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #444;
+}
+
+.mao h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    text-transform: uppercase;
+    color: #bbb;
+}
+
+.cartas {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.cartaMao {
+    min-width: 120px;
+    height: 160px;
+    border: 2px solid #daa520;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #3a3a3a 0%, #1a1a1a 100%);
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.cartaMao:hover {
+    transform: translateY(-10px);
+    border-color: #ffd700;
+    box-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
+}
+
+.cartaConteudo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    width: 100%;
+    padding: 0.5rem;
+    text-align: center;
+}
+
+/* BOTÃO */
+.botaoPronto {
+    align-self: center;
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background: #8b0000;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.botaoPronto:hover:not(:disabled) {
+    background: #c41e3a;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(196, 30, 58, 0.5);
+}
+
+.botaoPronto:disabled {
+    background: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
