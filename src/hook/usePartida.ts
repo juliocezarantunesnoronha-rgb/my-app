@@ -1,6 +1,6 @@
 "use client";
 
-import type { EstadoPartida } from "../tipos/index";
+import type { EstadoPartida } from "../types/index";
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 

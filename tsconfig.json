@@ -24,7 +24,9 @@
       }
     ],
     "paths": {
-      "@/components/*": ["components/*"],
+      "@/components/*": [
+        "components/*"
+      ],
       "@/*": [
         "./*"
       ]
@@ -36,8 +38,10 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
-, "src/configurações/variáveis.ts", "src/componentes/botao.jsx"  ],
+    "**/*.mts",
+    "src/config/variáveis.ts",
+    "src/components/botao.jsx"
+  ],
   "exclude": [
     "node_modules"
   ]

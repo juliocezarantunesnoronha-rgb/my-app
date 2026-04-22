@@ -1,5 +1,5 @@
 
-import TelaInicial from "../componentes/telainicial";
+import TelaInicial from "../components/telainicial";
 
 export default function AppPrincipal() {
   return (

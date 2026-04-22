@@ -1,6 +1,6 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
-import type { EstadoPartida } from "../tipos/index";
+import type { EstadoPartida } from "../types/index";
 
 const httpServer = createServer();
 const io = new Server(httpServer, {
@@ -88,7 +88,7 @@ io.on("connection", (socket) => {
             partidas.set(partidaId, criarEstadoInicial(partidaId));
         }
 
-        
+
         const jogadorId = atribuirSlot(partidaId, socket.id);
         if (!jogadorId) {
             socket.emit("erro_entrada", "Sala cheia. Tente outro código.");
@@ -105,14 +105,14 @@ io.on("connection", (socket) => {
 
         if (partida.jogadores.jogador1.mao.length === 0) {
             partida.jogadores.jogador1.mao = [
-                { id: "carta1", nome: "Lobo", img:"",   vida: 2, ataque: 1, raca: "Canino",   sigilos: [] },
-                { id: "carta2", nome: "Coruja", img:"",  vida: 1, ataque: 2, raca: "Pássaro",  sigilos: [] },
+                { id: "carta1", nome: "Lobo", img: "", vida: 2, ataque: 1, raca: "Canino", sigilos: [] },
+                { id: "carta2", nome: "Coruja", img: "", vida: 1, ataque: 2, raca: "Pássaro", sigilos: [] },
             ];
         }
         if (partida.jogadores.jogador2.mao.length === 0) {
             partida.jogadores.jogador2.mao = [
-                { id: "carta3", nome: "Urso", img:"", vida: 3, ataque: 2, raca: "Ungulado", sigilos: [] },
-                {id: "carta4", nome: "Serpente", img:"", vida: 2, ataque: 1, raca: "Réptil",   sigilos: [] },
+                { id: "carta3", nome: "Urso", img: "", vida: 3, ataque: 2, raca: "Ungulado", sigilos: [] },
+                { id: "carta4", nome: "Serpente", img: "", vida: 2, ataque: 1, raca: "Réptil", sigilos: [] },
             ];
         }
 
@@ -184,7 +184,7 @@ io.on("connection", (socket) => {
         console.log(`${jogadorId} está pronto`);
 
         if (jogadorId === "jogador1") {
-             partida.fase = "combate";
+            partida.fase = "combate";
 
             partida.vezDe = "jogador2";
             io.to(partidaId).emit("estado_atualizado", partida);

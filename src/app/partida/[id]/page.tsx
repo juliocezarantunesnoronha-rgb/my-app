@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { io, Socket } from "socket.io-client";
-import type { EstadoPartida, CartaDTO } from "../../../tipos";
+import type { EstadoPartida, CartaDTO } from "../../../types";
 import styles from "./page.module.css";
 
 export default function PartidaPage() {
@@ -36,7 +36,7 @@ export default function PartidaPage() {
 
         novoSocket.on("estado_atualizado", (novoEstado: EstadoPartida) => {
             setEstado(novoEstado);
-            
+
             setCartaSelecionada(null);
         });
 

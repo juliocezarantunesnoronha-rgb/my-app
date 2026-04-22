@@ -1,7 +1,7 @@
-import DecryptedText from '../configurações/DecryptedText';
+import DecryptedText from '../features/DecryptedText/components/DecryptedText';
 import "./style.css";
-import GameHook from '../ganchos/gameHook';
-import EvilEye from '../configurações/EvilEye';
+import GameHook from '../hook/gameHook';
+import EvilEye from '../features/EvilEye/components/EvilEye';
 
 import Link from 'next/link';
 

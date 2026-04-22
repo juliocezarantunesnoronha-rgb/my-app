@@ -1,5 +1,5 @@
 'use client';
-import DecryptedText from '../configurações/DecryptedText';
+import DecryptedText from '../features/DecryptedText/components/DecryptedText';
 import { useRouter } from "next/navigation";
 
 export default function GameHook() {
