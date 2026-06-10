@@ -72,8 +72,8 @@ function criarEstadoInicial(id: string): EstadoPartida {
             jogador2: [null, null, null, null],
         },
         jogadores: {
-            jogador1: { id: "jogador1", vida: 20, mao: [], danoDireto: 0 },
-            jogador2: { id: "jogador2", vida: 20, mao: [], danoDireto: 0 },
+            jogador1: { id: "jogador1", vida: 20, deck: [], danoDireto: 0, cemiterio: [] },
+            jogador2: { id: "jogador2", vida: 20, deck: [], danoDireto: 0, cemiterio: [] },
         }
     };
 }
@@ -103,14 +103,14 @@ io.on("connection", (socket) => {
 
         const partida = partidas.get(partidaId)!;
 
-        if (partida.jogadores.jogador1.mao.length === 0) {
-            partida.jogadores.jogador1.mao = [
+        if (partida.jogadores.jogador1.deck.length === 0) {
+            partida.jogadores.jogador1.deck = [
                 { id: "carta1", nome: "Lobo", img: "", vida: 2, ataque: 1, raca: "Canino", sigilos: [] },
                 { id: "carta2", nome: "Coruja", img: "", vida: 1, ataque: 2, raca: "Pássaro", sigilos: [] },
             ];
         }
-        if (partida.jogadores.jogador2.mao.length === 0) {
-            partida.jogadores.jogador2.mao = [
+        if (partida.jogadores.jogador2.deck.length === 0) {
+            partida.jogadores.jogador2.deck = [
                 { id: "carta3", nome: "Urso", img: "", vida: 3, ataque: 2, raca: "Ungulado", sigilos: [] },
                 { id: "carta4", nome: "Serpente", img: "", vida: 2, ataque: 1, raca: "Réptil", sigilos: [] },
             ];
@@ -154,13 +154,13 @@ io.on("connection", (socket) => {
         }
 
         const jogador = partida.jogadores[jogadorId];
-        const carta = jogador.mao.find(c => c.id === cartaId);
+        const carta = jogador.deck.find(c => c.id === cartaId);
         if (!carta) return;
 
         partida.tabuleiro[jogadorId][colunauna] = carta;
-        jogador.mao = jogador.mao.filter(c => c.id !== cartaId);
+        jogador.deck = jogador.deck.filter(c => c.id !== cartaId);
 
-        io.to(partidaId).emit("estado_atualizado", partida);
+        io.to(partidaId).emit("estado_atualizado", partida);t
     });
 
 

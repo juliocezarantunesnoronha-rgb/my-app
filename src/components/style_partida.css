@@ -1,0 +1,457 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #f0f0f0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+}
+
+.game-container {
+    width: 100%;
+    height: 100%;
+    max-width: 1400px;
+    display: flex;
+    background-color: black;
+    flex-direction: column;
+    border: 3px solid #000;
+    background: #fff;
+    padding: 15px;
+    gap: 15px;
+}
+
+/* ===== SEÇÃO DO TABULEIRO ===== */
+.board {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 80px 1fr 100px;
+    gap: 15px;
+    border: 2px solid #000;
+    padding: 15px;
+    align-items: center;
+    background-size: 105% 100%;
+    background-image: url('tablet-pixel(1).png');
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.sidebar-info {
+    width: 99%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 3px;
+    padding: 0;
+    background-size: 125% 100%;
+    background-image: url('frasco.png');
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.life-scale {
+    flex: 1;
+    border-bottom: 2px solid #000;
+    position: relative;
+    opacity: 0.6;
+}
+
+.life-scale.damaged {
+    background: #c4a700;
+    background: linear-gradient(90deg, rgba(196, 167, 0, 1) 18%, rgba(255, 242, 0, 1) 52%, rgba(230, 180, 0, 1) 100%);
+}
+
+
+.life-scale:last-child {
+    border-bottom: none;
+}
+
+.life-scale::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 8px;
+    height: 2px;
+    background: #000;
+}
+
+.field-grid {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+    width: 100%;
+}
+
+/* ===== SLOTS DE BATALHA ===== */
+.battlefield-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    align-items: center;
+    width: 100%;
+}
+
+.field-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    width: 100%;
+    max-width: 500px;
+    justify-items: center;
+}
+
+/* ===== CARDS GENÉRICOS ===== */
+.card-placeholder {
+    width: 100px;
+    aspect-ratio: 2.5/3.5;
+    border: 2px solid #333;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.card-placeholder:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== PAINEL DE AÇÕES ===== */
+.actions-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-right: 5vw;
+    align-items: center;
+    justify-content: center;
+}
+
+.turn-indicator {
+    background: #333;
+    padding: 5px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+.screen {
+    background: #0a0a0a;
+    border: 4px solid #444;
+    border-radius: 8px;
+    padding: 25px;
+    color: #00ff41;
+    font-family: 'Courier New', monospace;
+    overflow: hidden;
+    box-shadow: inset 0 0 15px rgba(0, 255, 65, 0.2);
+}
+
+.content {
+    font-size: 14px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    pointer-events: none;
+}
+
+
+.pass-turn-btn {
+    background: hsl(340deg 100% 32%);
+    border-radius: 12px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline-offset: 4px;
+    border: 2px solid #000;
+}
+
+.front {
+    display: block;
+    padding: 12px 28px;
+    border-radius: 12px;
+
+    font-size: 0.65rem;
+    background: hsl(345deg 100% 47%);
+    color: white;
+    transform: translateY(-6px);
+}
+
+.pass-turn-btn:active .front {
+    transform: translateY(-2px);
+}
+
+/* ===== SEÇÃO DE MÃO E DECKS ===== */
+.player-area {
+    flex: 0 1 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border: 2px solid #000;
+    gap: 20px;
+    min-height: 160px;
+}
+
+.hand-container {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fafafa;
+    border: 2px;
+
+}
+
+.hand-card {
+    width: 90px;
+    aspect-ratio: 2.5/3.5;
+    border: 1px solid #333;
+    border-radius: 3px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+
+
+    >img {
+        height: 100%;
+        width: 100%;
+    }
+}
+
+.draw-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.deck-slot {
+    width: 110px;
+    height: 150px;
+    border: 2px solid #000;
+    border-radius: 4px;
+    background: #f9f9f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 11px;
+    text-align: center;
+    padding: 8px;
+    cursor: pointer;
+    box-shadow: 0 2px 0 #000;
+    background-size: 125% 100%;
+    background-image: url('cartas_tras.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    position: relative;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        box-shadow 0.4s ease;
+}
+
+.deck-slot::before,
+.deck-slot::after {
+    content: "";
+    position: absolute;
+    width: 110px;
+    height: 150px;
+    border: 2px solid #000;
+    border-radius: 4px;
+    background-image: url('cartas_tras.png');
+    background-size: 125% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 14;
+    transition: transform 0.4s ease;
+}
+
+.deck-slot::before {
+    top: 4px;
+    left: 4px;
+}
+
+.deck-slot::after {
+    top: 8px;
+    left: 8px;
+}
+
+.deck-slot:hover {
+    transform: translateY(-40px) translateX(-5px) rotate(-2deg);
+    box-shadow: 10px 20px 30px rgba(0, 0, 0, 0.3);
+}
+
+.deck-slot:hover::before {
+    transform: translateY(40px) translateX(5px) rotate(2deg);
+}
+
+.deck-slot:hover::after {
+    transform: translateY(40px) translateX(5px) rotate(2deg);
+}
+
+#sacrifice-deck {
+    background-image: url('carta_tras_sacrificio.png');
+}
+
+#sacrifice-deck::before,
+#sacrifice-deck::after {
+    background-image: url('carta_tras_sacrificio.png');
+}
+
+/* ===== DETALHES DA CARTA (Uso futuro) ===== */
+.card-item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+}
+
+.card-header {
+    border-bottom: 1px solid #333;
+    padding: 4px;
+    font-size: 8px;
+    text-align: center;
+    background: #f0f0f0;
+    flex-shrink: 0;
+}
+
+.card-image {
+    flex: 1;
+    border-bottom: 1px solid #333;
+    background: #e8e8e8;
+}
+
+.card-seals {
+    border-bottom: 1px solid #333;
+    padding: 4px;
+    font-size: 7px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 25px;
+    flex-shrink: 0;
+}
+
+.card-footer {
+    padding: 3px;
+    font-size: 7px;
+    text-align: center;
+    background: #f9f9f9;
+    flex-shrink: 0;
+    height: calc(50vw * 0, 7143);
+    aspect-ratio: a2s2;
+}
+
+
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 1024px) {
+    .game-container {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .board {
+        grid-template-columns: 60px 1fr 80px;
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .field-row {
+        max-width: 400px;
+        gap: 10px;
+    }
+
+    .card-placeholder {
+        width: 85px;
+    }
+
+    .deck-slot {
+        width: 95px;
+        height: 130px;
+    }
+
+    .hand-card {
+        width: 75px;
+    }
+}
+
+@media (max-width: 768px) {
+    .game-container {
+        flex-direction: column;
+    }
+
+    .board {
+        grid-template-columns: 50px 1fr 70px;
+        flex: auto;
+    }
+
+    .field-row {
+        max-width: 320px;
+    }
+
+    .card-placeholder {
+        width: 70px;
+    }
+
+    .player-area {
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    .hand-container {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .hand-card {
+        width: 65px;
+    }
+
+    .deck-slot {
+        width: 85px;
+        height: 115px;
+    }
+
+    .actions-panel {
+        gap: 8px;
+    }
+
+}
+
+@media (max-width: 480px) {
+    .board {
+        grid-template-columns: 40px 1fr 60px;
+        gap: 8px;
+    }
+
+    .card-placeholder {
+        width: 55px;
+    }
+
+    .field-row {
+        max-width: 250px;
+        gap: 8px;
+    }
+
+    .hand-card {
+        width: 50px;
+    }
+
+    .deck-slot {
+        width: 70px;
+        height: 95px;
+        font-size: 9px;
+    }
+
+}

@@ -7,7 +7,8 @@ export type Jogador = "jogador1" | "jogador2";
 export interface JogadorDTO {
     id: string;
     vida: number;
-    mao: CartaDTO[];
+    deck: CartaDTO[];
     danoDireto: number;
+    cemiterio: CartaDTO[];
 }
     

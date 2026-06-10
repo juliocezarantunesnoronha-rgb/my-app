@@ -1,17 +1,25 @@
-import { CartaUI } from "./CartaUI";
+import styles from './tabuleiro.module.css';
+import type { CartaDTO } from '../types';
+import { CartaUI } from './CartaUI';
 
-export const Slot = ({ carta, onClick, isInimigo }: { carta: any, onClick?: () => void, isInimigo?: boolean }) => {
-  return (
-    <div 
-      onClick={onClick}
-      className={`
-        w-28 h-40 border-2 border-dashed border-stone-600/30 
-        flex items-center justify-center rounded-sm
-        ${!carta && !isInimigo ? 'hover:bg-stone-300/20 cursor-pointer' : ''}
-        ${isInimigo ? 'opacity-90' : ''}
-      `}
-    >
-      {carta ? <CartaUI carta={carta} /> : <div className="text-stone-500/20 text-4xl">?</div>}
-    </div>
-  );
-};
+interface SlotProps {
+    carta: CartaDTO | null;
+    isInimigo?: boolean;
+    clicavel?: boolean;
+    onClick?: () => void;
+}
+
+export function Slot({ carta, isInimigo = false, clicavel = false, onClick }: SlotProps) {
+    return (
+        <div
+            className={`
+                ${styles.slot}
+                ${!isInimigo ? styles.slotJogador : ''}
+                ${clicavel && !carta ? styles.slotClicavel : ''}
+            `}
+            onClick={clicavel && !carta ? onClick : undefined}
+        >
+            {carta && <CartaUI carta={carta} />}
+        </div>
+    );
+}

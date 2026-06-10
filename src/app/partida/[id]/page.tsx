@@ -5,7 +5,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { io, Socket } from "socket.io-client";
 import type { EstadoPartida, CartaDTO } from "../../../types";
-import styles from "./page.module.css";
+
+import styles from "../../../components/tabuleiro.module.css";
+import { ContadorVidaBalanca } from "../../../components/ContadorVida";
+import { CartaUI } from "../../../components/CartaUI";
+import { Slot } from "../../../components/Slot";
 
 export default function PartidaPage() {
     const router = useRouter();
@@ -17,13 +21,17 @@ export default function PartidaPage() {
     const [jogadorId, setJogadorId] = useState<"jogador1" | "jogador2" | null>(null);
     const [cartaSelecionada, setCartaSelecionada] = useState<CartaDTO | null>(null);
 
-    const euEstouPronto = jogadorId
-        ? (jogadorId === "jogador1" && estado?.vezDe === "jogador2") ||
-        (jogadorId === "jogador2" && (estado?.fase === "combate" || estado?.fase === "fim"))
-        : false;
-
     useEffect(() => {
         const novoSocket = io("http://localhost:3001");
+
+        novoSocket.on("erro_entrada", (msg: string) => {
+            alert(msg);
+            router.push("/jogo");
+        });
+
+        novoSocket.on("erro", (msg: string) => {
+            alert(msg);
+        });
 
         novoSocket.on("connect", () => {
             console.log("Conectado!");
@@ -36,29 +44,28 @@ export default function PartidaPage() {
 
         novoSocket.on("estado_atualizado", (novoEstado: EstadoPartida) => {
             setEstado(novoEstado);
-
             setCartaSelecionada(null);
-        });
-
-        novoSocket.on("erro_entrada", (msg: string) => {
-            alert(msg);
-            router.push("/");
-        });
-
-        novoSocket.on("erro", (msg: string) => {
-            alert(msg);
         });
 
         setSocket(novoSocket);
         return () => { novoSocket.disconnect(); };
-    }, [partidaId]); // ✅ removido jogadorId das deps — causava reconexão em loop
+    }, [partidaId]);
 
+    // ── Loading / Aguardando ──────────────────────────────────────────
     if (!estado || !jogadorId) {
-        return <div className={styles.loading}>Entrando na partida...</div>;
+        return (
+            <div className={styles.loading}>
+                Entrando na partida...
+            </div>
+        );
     }
 
     if (estado.fase === "aguardando") {
-        return <div className={styles.loading}>Aguardando oponente...</div>;
+        return (
+            <div className={styles.loading}>
+                Aguardando oponente...
+            </div>
+        );
     }
 
     if (estado.fase === "fim") {
@@ -66,26 +73,31 @@ export default function PartidaPage() {
         return (
             <div className={styles.loading}>
                 <h2>{vencedor === jogadorId ? "Você venceu! 🏆" : "Você perdeu! 💀"}</h2>
-                <button onClick={() => router.push("/")}>Voltar ao menu</button>
+                <button onClick={() => router.push("/jogo")}>Voltar ao menu</button>
             </div>
         );
     }
 
-    const meuCampo = estado.tabuleiro[jogadorId];
-    const campoInimigo = estado.tabuleiro[jogadorId === "jogador1" ? "jogador2" : "jogador1"];
-    const minhaVida = estado.jogadores[jogadorId].vida;
-    const vidaInimiga = estado.jogadores[jogadorId === "jogador1" ? "jogador2" : "jogador1"].vida;
-    const minhasMaos = estado.jogadores[jogadorId].mao;
-    const ehMinhaVez = estado.vezDe === jogadorId && estado.fase === "posicionamento";
+    // ── Dados derivados ───────────────────────────────────────────────
+    const inimigoId = jogadorId === "jogador1" ? "jogador2" : "jogador1";
 
+    const meuCampo = estado.tabuleiro[jogadorId];
+    const campoInimigo = estado.tabuleiro[inimigoId];
+    const minhaVida = estado.jogadores[jogadorId].vida;
+    const vidaInimiga = estado.jogadores[inimigoId].vida;
+    const minhasMaos = estado.jogadores[jogadorId].deck;
+    const ehMinhaVez = estado.vezDe === jogadorId && estado.fase === "posicionamento";
+    const vidaMax = 20; // valor inicial definido no servidor
+
+    // ── Handlers ─────────────────────────────────────────────────────
     const handleSelecionarCarta = (carta: CartaDTO) => {
         if (!ehMinhaVez) return;
-        setCartaSelecionada(prev => prev?.id === carta.id ? null : carta);
+        setCartaSelecionada((prev) => prev?.id === carta.id ? null : carta);
     };
 
     const handleClicarSlot = (coluna: number) => {
         if (!ehMinhaVez || !cartaSelecionada) return;
-        if (meuCampo[coluna] !== null) return; // slot ocupado
+        if (meuCampo[coluna] !== null) return;
         socket?.emit("posicionar_carta", {
             partidaId,
             cartaId: cartaSelecionada.id,
@@ -100,140 +112,113 @@ export default function PartidaPage() {
         socket?.emit("pronto", { partidaId, jogadorId });
     };
 
+    const faseBadge = estado.fase === "combate"
+        ? "Combate..."
+        : ehMinhaVez
+            ? `Turno ${estado.rodada}`
+            : `Turno ${estado.rodada}`;
+
+    // ── Render ────────────────────────────────────────────────────────
     return (
-        <div className={styles.container}>
-            {/* CABEÇALHO */}
-            <div className={styles.header}>
-                <div className={styles.vidaInimiga}>
-                    <span className={styles.label}>Inimigo</span>
-                    <span className={styles.vida}>{vidaInimiga} ❤️</span>
-                </div>
-                <div className={styles.info}>
-                    <span>Rodada {estado.rodada}</span>
-                    <span className={estado.fase === "posicionamento" ? styles.posicionamento : styles.combate}>
-                        {estado.fase.toUpperCase()}
-                    </span>
-                    {/* ✅ Mostra claramente de quem é a vez */}
-                    <span style={{ fontWeight: 500, color: ehMinhaVez ? "green" : "gray" }}>
-                        {estado.fase === "combate"
-                            ? "Combate em andamento..."
-                            : ehMinhaVez
-                                ? "Sua vez"
-                                : "Vez do oponente"}
-                    </span>
-                </div>
-                <div className={styles.minhaVida}>
-                    <span className={styles.label}>Você</span>
-                    <span className={styles.vida}>{minhaVida} ❤️</span>
+        <div className={styles.tabuleiro}>
+
+            {/* ── HEADER BAR: visível apenas em mobile (< 480px) ── */}
+            <div className={styles.headerBar}>
+                <ContadorVidaBalanca
+                    vidaJogador1={minhaVida}
+                    vidaJogador2={vidaInimiga}
+                    vidaMax={vidaMax}
+                />
+                <div className={styles.turno}>
+                    {estado.fase === "combate"
+                        ? "Combate"
+                        : ehMinhaVez
+                            ? "Sua vez"
+                            : "Oponente"}
+                    &nbsp;·&nbsp;R{estado.rodada}
                 </div>
             </div>
 
-            {/* CAMPO INIMIGO */}
-            <div className={styles.tabuleiroInimigo}>
-                <h3>Campo do Inimigo</h3>
-                <div className={styles.slots}>
+            {/* ── CONTADOR DE VIDA: lateral em tablet/desktop ── */}
+            <ContadorVidaBalanca
+                vidaJogador1={minhaVida}
+                vidaJogador2={vidaInimiga}
+                vidaMax={vidaMax}
+                pc
+            />
+
+            {/* ── ÁREA DE BATALHA ── */}
+            <div className={styles.areaCartas}>
+
+                {/* Campo do inimigo */}
+                <div className={styles.batalha}>
                     {campoInimigo.map((carta, idx) => (
-                        <CartaSlot key={idx} carta={carta} indisponivel />
+                        <Slot
+                            key={idx}
+                            carta={carta}
+                            isInimigo
+                        />
                     ))}
                 </div>
-            </div>
 
-            {/* SEU CAMPO */}
-            <div className={styles.tabuleiroSeu}>
-                <h3>Seu Campo</h3>
-                <div className={styles.slots}>
+                {/* Seu campo */}
+                <div className={styles.batalha}>
                     {meuCampo.map((carta, idx) => (
-                        <CartaSlot
+                        <Slot
                             key={idx}
                             carta={carta}
                             clicavel={ehMinhaVez && !carta && cartaSelecionada !== null}
-                            onClique={() => handleClicarSlot(idx)}
+                            onClick={() => handleClicarSlot(idx)}
                         />
                     ))}
                 </div>
             </div>
 
-            {/* MÃO */}
+            {/* ── DECK WRAP: lateral em tablet/desktop ── */}
+            <div className={styles.deckWrap}>
+                <div className={styles.deck}>
+                    <span className={styles.deckCount}>
+                        {minhasMaos.length} cartas
+                    </span>
+                </div>
+                <div
+                    className={`${styles.deck} ${styles.deckSacrificio}`}
+                    onClick={handlePronto}
+                    title={ehMinhaVez ? "Passar turno" : "Aguardando..."}
+                />
+            </div>
+
+            {/* ── FOOTER BAR: visível apenas em mobile ── */}
+            <div className={styles.footerBar}>
+                <div className={styles.deck} style={{ height: "clamp(50px, 10vw, 70px)" }}>
+                    <span className={styles.deckCount}>{minhasMaos.length} cartas</span>
+                </div>
+                <div
+                    className={`${styles.deck} ${styles.deckSacrificio}`}
+                    style={{ height: "clamp(50px, 10vw, 70px)" }}
+                    onClick={handlePronto}
+                />
+            </div>
+
+            {/* ── MÃO DO JOGADOR ── */}
             <div className={styles.mao}>
-                <h3>Sua Mão {!ehMinhaVez && <span style={{ fontSize: "12px", color: "gray" }}>(aguarde sua vez)</span>}</h3>
-                <div className={styles.cartas}>
-                    {minhasMaos.length === 0
-                        ? <span style={{ fontSize: "13px", color: "gray" }}>Mão vazia</span>
-                        : minhasMaos.map((carta) => (
-                            <CartaItem
-                                key={carta.id}
-                                carta={carta}
-                                selecionada={cartaSelecionada?.id === carta.id}
-                                desabilitada={!ehMinhaVez}
-                                onClick={() => handleSelecionarCarta(carta)}
-                            />
-                        ))
-                    }
-                </div>
+                {minhasMaos.length === 0 ? (
+                    <span style={{ fontSize: "0.7rem", color: "rgba(201,168,76,0.4)", fontFamily: "'Crimson Text', serif" }}>
+                        Mão vazia
+                    </span>
+                ) : (
+                    minhasMaos.map((carta) => (
+                        <CartaUI
+                            key={carta.id}
+                            carta={carta}
+                            selecionada={cartaSelecionada?.id === carta.id}
+                            desabilitada={!ehMinhaVez}
+                            onClick={() => handleSelecionarCarta(carta)}
+                        />
+                    ))
+                )}
             </div>
 
-            {/* BOTÃO PRONTO */}
-            <button
-                className={styles.botaoPronto}
-                onClick={handlePronto}
-                disabled={!ehMinhaVez || euEstouPronto}
-            >
-                {euEstouPronto ? "Aguardando oponente..." : "Pronto!"}
-            </button>
-        </div>
-    );
-}
-
-function CartaSlot({
-    carta,
-    indisponivel = false,
-    clicavel = false,
-    onClique,
-}: {
-    carta: CartaDTO | null;
-    indisponivel?: boolean;
-    clicavel?: boolean;
-    onClique?: () => void;
-}) {
-    return (
-        <div
-            className={`${styles.slot} ${carta ? styles.comCarta : ""} ${indisponivel ? styles.indisponivel : ""} ${clicavel ? styles.clicavel : ""}`}
-            onClick={onClique}
-        >
-            {carta ? (
-                <div className={styles.carta}>
-                    <span className={styles.nome}>{carta.nome}</span>
-                    <span className={styles.stats}>⚔️ {carta.ataque} | ❤️ {carta.vida}</span>
-                    <span className={styles.raca}>{carta.raca}</span>
-                </div>
-            ) : (
-                <span className={styles.vazio}>{clicavel ? "▼" : "+"}</span>
-            )}
-        </div>
-    );
-}
-
-function CartaItem({
-    carta,
-    selecionada,
-    desabilitada,
-    onClick,
-}: {
-    carta: CartaDTO;
-    selecionada: boolean;
-    desabilitada: boolean;
-    onClick: () => void;
-}) {
-    return (
-        <div
-            className={`${styles.cartaMao} ${selecionada ? styles.selecionada : ""} ${desabilitada ? styles.desabilitada : ""}`}
-            onClick={desabilitada ? undefined : onClick}
-        >
-            <div className={styles.cartaConteudo}>
-                <span className={styles.nome}>{carta.nome}</span>
-                <span className={styles.stats}>⚔️ {carta.ataque} | ❤️ {carta.vida}</span>
-                <span className={styles.raca}>{carta.raca}</span>
-            </div>
         </div>
     );
 }
